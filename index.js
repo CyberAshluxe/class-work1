@@ -10,8 +10,12 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 const mongoose = require("mongoose");
 const customerRouter = require("./routes/user.route");
+const customerModel = require("./models/user.model");
+const cors = require("cors");
+app.use(cors());
 
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const URI = process.env.URI;
 
@@ -24,19 +28,7 @@ mongoose
     console.log("MongoDb connection error:", err);
   });
 
-// Define customerSchema and customerModel before using them
-let customerSchema = mongoose.Schema({
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  email: {
-    type: String,
-    required: true,
-    unique: [true, "Email has been taken, Please choose another one"],
-  },
-  password: { type: String, required: true },
-});
 
-let customerModel = mongoose.model("User", customerSchema);
 
 let allCustomers = [];
 app.use("/user", customerRouter);
@@ -81,7 +73,7 @@ app.post("/signup", (req, res) => {
   newCustomer
     .save()
     .then(() => {
-      res.redirect("/dashboard");
+      res.redirect("/login");
     })
     .catch((err) => {
       console.error("Error saving customer:", err);
